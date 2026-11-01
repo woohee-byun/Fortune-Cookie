@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fortune Cookie</title>
+  </head>
+  <body>
+    <canvas id="paper" aria-hidden="true"></canvas>
+    <video id="cam" playsinline muted aria-hidden="true"></video>
+    <main id="stage">
+      <div id="cookie" tabindex="0" role="button" aria-label="Fortune cookie. Hold to crack it open.">
+        <img id="cookie-img" src="/assets/cookie_whole.png" alt="" draggable="false" />
+        <canvas id="cracks"></canvas>
+      </div>
+      <div id="scene" hidden>
+        <div id="strip"><p id="fortune" aria-live="polite"></p></div>
+        <img id="half-l" src="/assets/half_left.png" alt="" draggable="false" />
+        <img id="half-r" src="/assets/half_right.png" alt="" draggable="false" />
+      </div>
+    </main>
+    <div id="crumbs" aria-hidden="true"></div>
+    <div id="flash" aria-hidden="true"></div>
+    <img id="swatch" src="/assets/texture_swatch.jpg" alt="" hidden />
+    <p id="note" role="status"></p>
+    <div id="actions" inert>
+      <button id="again" class="btn" type="button">
+        <span>Open another</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4.5h-4.5"/>
+        </svg>
+      </button>
+      <button id="save" class="btn" type="button">
+        <span>Save fortune</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 4v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="M5 19.5h14"/>
+        </svg>
+      </button>
+    </div>
+    <p id="hint"></p>
+    <p id="sound-note" role="status">Sound on · press M to mute</p>
+    <button id="sound" type="button" aria-pressed="true" aria-label="Sound on. Turn sound off">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>
+        <g class="on"><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></g>
+        <g class="off"><path d="M16 9.5l5 5M21 9.5l-5 5"/></g>
+      </svg>
+    </button>
+    <canvas id="debug" hidden></canvas>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

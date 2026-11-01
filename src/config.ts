@@ -1,0 +1,18 @@
+export const config = {
+  r_open: 1.9,
+  r_closed: 1.0,
+  fistSmoothingAlpha: 0.35,
+  crackStart: 0.15,
+  crackFull: 0.75,
+  breakThreshold: 0.8,
+  breakHoldMs: 100,
+  crackRetreatBelow: 0.3,
+  lostHandHoldMs: 300,
+  lostHandRelaxMs: 600,
+  resetOpenBelow: 0.2,
+  resetOpenHoldMs: 1000,
+  halfScale: 0.9,
+  crumbGravity: 2200,
+  shakeMaxPx: 3,
+  shakeMaxDeg: 1.5,
+};

@@ -1,0 +1,110 @@
+:root {
+  --paper-bg: #ece8e2;
+  --strip-paper: #eeebe3;
+  --strip-ink: #25326b;
+  --strip-accent: #34469a;
+  --hint-ink: #5a2b2f;
+  --cookie-warmth: 1;
+}
+html, body { margin: 0; height: 100%; background: var(--paper-bg); color: var(--hint-ink);
+  font-family: 'Newsreader', Georgia, 'Times New Roman', serif; overflow: hidden; }
+#paper { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+/* Hidden but still playing (display:none can pause playback). */
+#cam { position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+#stage { position: fixed; inset: 0; z-index: 1; display: grid; place-items: center; }
+#cookie {
+  position: relative; height: clamp(260px, 38vh, 420px); aspect-ratio: 563 / 490;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  outline: none; will-change: transform;
+}
+#cookie:active { cursor: grabbing; }
+#cookie:focus-visible { outline: 2px solid var(--hint-ink); outline-offset: 12px; border-radius: 24px; }
+#cookie img, #cookie canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#cookie img { filter: saturate(var(--cookie-warmth)); -webkit-user-drag: none; }
+
+#hint, #note {
+  position: fixed; left: 0; right: 0; text-align: center; font-size: 15px; letter-spacing: 0.02em;
+  color: var(--hint-ink); z-index: 2; pointer-events: none; transition: opacity 0.4s ease-out;
+}
+#hint { bottom: 40px; font-size: 17px; }
+#note { bottom: 72px; opacity: 0; font-size: 13px; }
+#note.show { opacity: 0.7; }
+
+#debug { position: fixed; top: 12px; left: 12px; width: 320px; height: 240px;
+  background: rgba(0,0,0,.75); border-radius: 8px; z-index: 10; }
+#debug[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  #hint, #note { transition-duration: 0.1s; }
+}
+
+/* ---- Stage 3: broken state ---- */
+#scene { position: fixed; left: 50%; top: 50%; width: 0; height: 0; z-index: 1; pointer-events: none; }
+#scene[hidden] { display: none; }
+#scene img { position: absolute; left: 0; top: 0; height: auto; will-change: transform;
+  /* soft contact shadow like the whole cookie's */
+  filter: saturate(var(--cookie-warmth)) drop-shadow(-5px 10px 10px rgba(60, 40, 25, 0.85));
+  user-select: none; }
+#strip {
+  pointer-events: auto; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  position: absolute; left: 0; top: 0; width: min(78vw, 440px); box-sizing: border-box;
+  padding: 22px 28px 20px 34px; will-change: transform, opacity;
+  /* real-paper feel: grain + fibres + soft mottling over a slightly warm sheet */
+  background-color: var(--strip-paper);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><filter id='g' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0.45 -0.17'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200'><filter id='b' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.03' numOctaves='2' seed='8'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0.35 -0.1'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>"),
+    linear-gradient(100deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 35%, rgba(120,105,80,.06) 100%);
+  background-size: 300px 200px, 400px 200px, 100% 100%;
+}
+/* printed blue tab at the top-left corner, and a thin blue edge line at the bottom-left */
+#strip::before { content: ''; position: absolute; left: 0; top: 0; width: 13%; height: 22%;
+  background: var(--strip-accent); opacity: .92; }
+#strip::after { content: ''; position: absolute; left: 0; bottom: 0; width: 13%; height: 2px;
+  background: var(--strip-accent); opacity: .85; }
+#fortune {
+  margin: 0; text-align: center; color: var(--strip-ink); font-size: 18px; line-height: 1.4;
+  letter-spacing: 0.02em; height: 2.8em; display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#crumbs { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+.crumb { position: absolute; left: 0; top: 0; will-change: transform, opacity; filter: saturate(var(--cookie-warmth)); }
+#flash { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at 50% 50%, #fff 0%, #fff8e8 60%, transparent 100%); }
+#swatch { position: absolute; width: 0; height: 0; }
+
+#actions {
+  position: fixed; left: 50%; bottom: 36px; transform: translateX(-50%); z-index: 5;
+  display: flex; gap: 12px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease-out;
+}
+#actions.show { opacity: 1; pointer-events: auto; }
+.btn {
+  font: inherit; font-size: 15px; letter-spacing: 0.02em; color: var(--hint-ink);
+  background: transparent; border: 1px solid currentColor; border-radius: 999px;
+  padding: 9px 18px 9px 22px; cursor: pointer; transition: background-color 0.2s; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn:hover { background: rgba(90, 43, 47, 0.07); }
+.btn:focus-visible { outline: 2px solid var(--hint-ink); outline-offset: 3px; }
+
+/* ---- Stage 4: sound toggle ---- */
+#sound {
+  position: fixed; top: 16px; right: 16px; z-index: 6; width: 40px; height: 40px;
+  display: grid; place-items: center; padding: 0; color: var(--hint-ink); background: transparent;
+  border: 1px solid transparent; border-radius: 50%; cursor: pointer; opacity: 0.65;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+#sound:hover { opacity: 1; background: rgba(90, 43, 47, 0.07); }
+#sound:focus-visible { outline: 2px solid var(--hint-ink); outline-offset: 2px; opacity: 1; }
+#sound .on { display: none; }
+#sound[aria-pressed='true'] .on { display: inline; }
+#sound[aria-pressed='true'] .off { display: none; }
+
+#strip.dragging { cursor: grabbing; z-index: 5; }
+#strip:focus-visible { outline: 2px solid var(--hint-ink); outline-offset: 6px; }
+
+#sound-note {
+  position: fixed; top: 16px; right: 60px; z-index: 6; margin: 0; height: 40px; line-height: 40px; white-space: nowrap;
+  font-size: 13px; letter-spacing: 0.02em;
+  color: var(--hint-ink); opacity: 0.75; pointer-events: none; transition: opacity 0.5s ease-out;
+}
+#sound-note.hide { opacity: 0; }
